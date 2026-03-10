@@ -45,10 +45,10 @@
   .form-group select option { background:#2a2a2a; }
 
   .items-header {
-    display:grid; grid-template-columns:28px 1fr 60px 70px 55px 32px;
+    display:grid; grid-template-columns:28px 1fr 58px 55px 60px 50px 32px;
     gap:4px; font-size:.65rem; color:#888; letter-spacing:.5px; text-transform:uppercase; padding:4px 0;
   }
-  .item-row { display:grid; grid-template-columns:28px 1fr 60px 70px 55px 32px; gap:4px; margin-bottom:6px; align-items:start; }
+  .item-row { display:grid; grid-template-columns:28px 1fr 58px 55px 60px 50px 32px; gap:4px; margin-bottom:6px; align-items:start; }
   .item-num {
     background:#333; color:var(--accent2); border-radius:2px; text-align:center;
     padding:6px 0; font-size:.72rem; font-weight:600; min-height:30px;
@@ -223,7 +223,7 @@
     <div class="form-section">
       <h2>📦 Items</h2>
       <div class="items-header">
-        <div>#</div><div>Description / Serial No.</div><div>Qty</div><div>Rate (₹)</div><div>Disc%</div><div></div>
+        <div>#</div><div>Description / Serial No.</div><div>HSN</div><div>Qty</div><div>Rate (₹)</div><div>Disc%</div><div></div>
       </div>
       <div id="items-container"></div>
       <button class="add-item-btn" onclick="addItem()">+ Add Item</button>
@@ -246,11 +246,9 @@
       <h2>📋 Terms &amp; Conditions</h2>
       <div class="form-group">
         <label>Terms (shown on invoice — one per line)</label>
-        <textarea id="terms_text" style="min-height:100px;line-height:1.5">1. Goods once sold will not be taken back or exchanged.
-2. We declare that this invoice shows the actual price of the goods described and that all particulars are true and correct.
-3. All disputes are subject to ANANDAPUR JURISDICTION only.
-4. Interest @ 18% p.a. will be charged after due date.
-5. E. &amp; O.E.</textarea>
+        <textarea id="terms_text" style="min-height:80px;line-height:1.5">1. Goods once sold will not be taken back or exchanged.
+2. All disputes are subject to ANANDAPUR JURISDICTION only.
+3. Interest @ 18% p.a. will be charged after due date.</textarea>
       </div>
     </div>
 
@@ -377,8 +375,9 @@ function renderItemInputs() {
       '<div class="item-num">'+(i+1)+'</div>'+
       '<div style="display:flex;flex-direction:column;gap:3px">'+
         '<input type="text" placeholder="Item Description" value="'+(item.desc||'').replace(/"/g,'&quot;')+'" oninput="items['+i+'].desc=this.value;generateInvoice()">'+
-        '<input type="text" placeholder="Serial No. / HSN (optional)" value="'+(item.serial||'').replace(/"/g,'&quot;')+'" style="font-size:.68rem;color:#aaa" oninput="items['+i+'].serial=this.value;generateInvoice()">'+
+        '<input type="text" placeholder="Serial No. (optional)" value="'+(item.serial||'').replace(/"/g,'&quot;')+'" style="font-size:.68rem;color:#aaa" oninput="items['+i+'].serial=this.value;generateInvoice()">'+
       '</div>'+
+      '<div><input type="text" placeholder="HSN" value="'+(item.hsn||'')+'" style="text-align:center;font-size:.72rem" oninput="items['+i+'].hsn=this.value;generateInvoice()"></div>'+
       '<div><input type="number" value="'+item.qty+'" min="1" oninput="items['+i+'].qty=parseFloat(this.value)||1;generateInvoice()" style="text-align:center"></div>'+
       '<div><input type="number" value="'+item.rate+'" min="0" oninput="items['+i+'].rate=parseFloat(this.value)||0;generateInvoice()" style="text-align:right"></div>'+
       '<div><input type="number" value="'+item.disc+'" min="0" max="100" oninput="items['+i+'].disc=parseFloat(this.value)||0;generateInvoice()" style="text-align:right"></div>'+
@@ -439,15 +438,15 @@ function generateInvoice() {
   var amtColStyle = 'border-left:.8px solid #555;border-right:.8px solid #555;border-top:none;border-bottom:none;padding:3px 5px;text-align:right';
   var fullBorder = 'border:.8px solid #555;padding:3px 5px';
 
-  // Build Terms & Conditions HTML for invoice
+  // Build Terms & Conditions HTML for invoice (replaces Declaration)
   var termsRaw = document.getElementById('terms_text').value.trim();
   var termsLines = termsRaw ? termsRaw.split('\n').filter(function(l){ return l.trim(); }) : [];
   var termsHTML = '';
   if(termsLines.length > 0) {
     termsHTML =
-      '<div style="font-size:8.5px;color:#333;margin-top:10px;padding-top:6px;border-top:.8px solid #ccc">'+
-        '<b style="font-size:9px;text-decoration:underline">Terms &amp; Conditions</b><br>'+
-        '<div style="margin-top:3px;line-height:1.7">'+
+      '<div style="font-size:8.5px;color:#333;margin-top:8px">'+
+        '<u><b>Terms &amp; Conditions</b></u><br>'+
+        '<div style="margin-top:3px;line-height:1.8">'+
           termsLines.map(function(l){ return l.replace(/&amp;/g,'&'); }).join('<br>')+
         '</div>'+
       '</div>';
@@ -535,11 +534,6 @@ function generateInvoice() {
         '<b>for '+val('company_name')+'</b>'+
         '<div style="margin-top:40px;font-size:8.5px;color:#555">Authorised Signatory</div>'+
       '</div>'+
-    '</div>'+
-
-    '<div style="font-size:8.5px;color:#444;margin-top:8px">'+
-      '<u>Declaration</u><br>'+
-      'We declare that invoice shows the actual price of the goods described and that all particulars are true and correct.'+
     '</div>'+
 
     termsHTML +
